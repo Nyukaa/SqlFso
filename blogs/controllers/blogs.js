@@ -1,6 +1,13 @@
 const blogsRouter = require("express").Router();
 const Blog = require("../models/blog");
-
+// Middleware to find a blog by ID and attach it to the request object
+const blogFinder = async (req, res, next) => {
+  req.blog = await Blog.findByPk(req.params.id);
+  if (!req.blog) {
+    return res.status(404).end();
+  }
+  next();
+};
 blogsRouter.get("/", async (req, res) => {
   const blogs = await Blog.findAll();
   res.json(blogs);
@@ -19,17 +26,8 @@ blogsRouter.post("/", async (req, res) => {
   }
 });
 // DELETE blog
-blogsRouter.delete("/:id", async (req, res) => {
-  try {
-    const blog = await Blog.findByPk(req.params.id);
-    if (blog) {
-      await blog.destroy();
-      res.status(204).end();
-    } else {
-      res.status(404).json({ error: "Blog not found" });
-    }
-  } catch (error) {
-    res.status(400).json({ error });
-  }
+blogsRouter.delete("/:id", blogFinder, async (req, res) => {
+  await req.blog.destroy();
+  res.json(req.blog);
 });
 module.exports = blogsRouter;
