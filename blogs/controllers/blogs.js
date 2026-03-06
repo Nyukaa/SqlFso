@@ -22,12 +22,24 @@ blogsRouter.post("/", async (req, res) => {
 
     res.json(blog);
   } catch (error) {
-    res.status(400).json({ error });
+    next(error);
   }
 });
 // DELETE blog
 blogsRouter.delete("/:id", blogFinder, async (req, res) => {
   await req.blog.destroy();
   res.json(req.blog);
+});
+
+//PUT  like of a blog
+
+blogsRouter.put("/:id", blogFinder, async (req, res) => {
+  try {
+    req.blog.likes = req.body.likes;
+    await req.blog.save();
+    res.json(req.blog);
+  } catch (error) {
+    next(error);
+  }
 });
 module.exports = blogsRouter;
