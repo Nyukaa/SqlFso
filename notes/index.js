@@ -1,6 +1,6 @@
-require("dotenv").config();
 const express = require("express");
-const sequelize = require("./utils/db");
+const { PORT } = require("./utils/config");
+const { connectToDatabase } = require("./utils/db");
 const notesRouter = require("./controllers/notes");
 
 const app = express();
@@ -8,11 +8,9 @@ const app = express();
 app.use(express.json());
 app.use("/api/notes", notesRouter);
 
-const PORT = process.env.PORT || 3001;
-
 const startServer = async () => {
   try {
-    await sequelize.authenticate();
+    await connectToDatabase();
     console.log("Database connected successfully.");
     app.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);
