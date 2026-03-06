@@ -2,11 +2,15 @@ const express = require("express");
 const { PORT } = require("./utils/config");
 const { connectToDatabase } = require("./utils/db");
 const notesRouter = require("./controllers/notes");
+const usersRouter = require("./controllers/users");
+const loginRouter = require("./controllers/login");
 
 const app = express();
 
 app.use(express.json());
 app.use("/api/notes", notesRouter);
+app.use("/api/users", usersRouter);
+app.use("/api/login", loginRouter);
 
 const startServer = async () => {
   try {
