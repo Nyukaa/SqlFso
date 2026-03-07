@@ -1,5 +1,5 @@
 const notesRouter = require("express").Router();
-const Note = require("../models/note");
+const { Note, User } = require("../models");
 const noteFinder = async (req, res, next) => {
   req.note = await Note.findByPk(req.params.id);
   if (!req.note) {
@@ -7,23 +7,54 @@ const noteFinder = async (req, res, next) => {
   }
   next();
 };
+const tokenExtractor = (req, res, next) => {
+  const authorization = req.get("authorization");
+  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
+    try {
+      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
+    } catch {
+      return res.status(401).json({ error: "token invalid" });
+    }
+  } else {
+    return res.status(401).json({ error: "token missing" });
+  }
+  next();
+};
+
 notesRouter.get("/", async (req, res) => {
-  const notes = await Note.findAll();
-  console.log("Getting all notes", JSON.stringify(notes, null, 2));
-  //console.log(notes.map((n) => n.toJSON())); the same log as above but more readable
+  const notes = await Note.findAll({
+    attributes: { exclude: ["userId"] },
+    include: {
+      model: User,
+      attributes: ["name"],
+    },
+  });
   res.json(notes);
 });
 
-notesRouter.post("/", async (req, res) => {
+// notesRouter.post("/", async (req, res) => {
+//   try {
+//     const note = await Note.create({
+//       ...req.body,
+//       date: new Date(),
+//     });
+
+//     res.json(note);
+//   } catch (error) {
+//     res.status(400).json({ error });
+//   }
+// });
+notesRouter.post("/", tokenExtractor, async (req, res) => {
   try {
+    const user = await User.findOne();
     const note = await Note.create({
       ...req.body,
       date: new Date(),
+      userId: user.id,
     });
-
     res.json(note);
   } catch (error) {
-    res.status(400).json({ error });
+    return res.status(400).json({ error });
   }
 });
 notesRouter.get("/:id", noteFinder, async (req, res) => {
