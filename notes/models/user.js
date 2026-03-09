@@ -28,6 +28,7 @@ User.init(
     sequelize,
     underscored: true,
     timestamps: false,
+    tableName: "note_users", // Avoid using reserved keywords like "users"
     modelName: "user",
   }
 );
