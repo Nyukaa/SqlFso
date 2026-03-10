@@ -1,5 +1,7 @@
 const blogsRouter = require("express").Router();
+const tokenExtractor = require("../middleware/tokenExtractor");
 const Blog = require("../models/blog");
+const { User } = require("../models");
 // Middleware to find a blog by ID and attach it to the request object
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -13,11 +15,13 @@ blogsRouter.get("/", async (req, res) => {
   res.json(blogs);
 });
 
-blogsRouter.post("/", async (req, res) => {
+blogsRouter.post("/", tokenExtractor, async (req, res, next) => {
   try {
+    const user = await User.findByPk(req.decodedToken.id);
     const blog = await Blog.create({
       ...req.body,
       date: new Date(),
+      userId: user.id,
     });
 
     res.json(blog);
@@ -25,15 +29,22 @@ blogsRouter.post("/", async (req, res) => {
     next(error);
   }
 });
-// DELETE blog
-blogsRouter.delete("/:id", blogFinder, async (req, res) => {
+// DELETE blog, check if the user is the owner
+blogsRouter.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
+  if (String(req.blog.userId) !== String(req.decodedToken.id)) {
+    return res
+      .status(403)
+      .json({ error: "you are not allowed to delete this blog" });
+  }
+
   await req.blog.destroy();
-  res.json(req.blog);
+
+  res.status(204).end();
 });
 
 //PUT  like of a blog
 
-blogsRouter.put("/:id", blogFinder, async (req, res) => {
+blogsRouter.put("/:id", blogFinder, async (req, res, next) => {
   try {
     req.blog.likes = req.body.likes;
     await req.blog.save();

@@ -57,6 +57,7 @@ notesRouter.post("/", tokenExtractor, async (req, res) => {
     return res.status(400).json({ error });
   }
 });
+
 notesRouter.get("/:id", noteFinder, async (req, res) => {
   res.json(req.note);
 });
