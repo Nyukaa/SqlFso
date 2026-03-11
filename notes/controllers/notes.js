@@ -1,5 +1,7 @@
 const notesRouter = require("express").Router();
+const tokenExtractor = require("../middleware/tokenExtractor");
 const { Note, User } = require("../models");
+const { Op } = require("sequelize");
 const noteFinder = async (req, res, next) => {
   req.note = await Note.findByPk(req.params.id);
   if (!req.note) {
@@ -7,27 +9,25 @@ const noteFinder = async (req, res, next) => {
   }
   next();
 };
-const tokenExtractor = (req, res, next) => {
-  const authorization = req.get("authorization");
-  if (authorization && authorization.toLowerCase().startsWith("bearer ")) {
-    try {
-      req.decodedToken = jwt.verify(authorization.substring(7), SECRET);
-    } catch {
-      return res.status(401).json({ error: "token invalid" });
-    }
-  } else {
-    return res.status(401).json({ error: "token missing" });
-  }
-  next();
-};
 
 notesRouter.get("/", async (req, res) => {
+  const where = {};
+  if (req.query.important) {
+    where.important = req.query.important === "true";
+  }
+
+  if (req.query.search) {
+    where.content = {
+      [Op.substring]: req.query.search,
+    };
+  }
   const notes = await Note.findAll({
     attributes: { exclude: ["userId"] },
     include: {
       model: User,
       attributes: ["name"],
     },
+    where,
   });
   res.json(notes);
 });
@@ -46,15 +46,17 @@ notesRouter.get("/", async (req, res) => {
 // });
 notesRouter.post("/", tokenExtractor, async (req, res) => {
   try {
-    const user = await User.findOne();
+    const user = await User.findByPk(req.decodedToken.id);
+
     const note = await Note.create({
       ...req.body,
       date: new Date(),
       userId: user.id,
     });
+
     res.json(note);
   } catch (error) {
-    return res.status(400).json({ error });
+    res.status(400).json({ error });
   }
 });
 

@@ -13,3 +13,7 @@ blog
 "title": "Anna",
 "likes": 4
 }
+notes
+{
+"content":"Relational databases rule the world",
+"important": true}
