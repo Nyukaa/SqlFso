@@ -2,6 +2,7 @@ const blogsRouter = require("express").Router();
 const tokenExtractor = require("../middleware/tokenExtractor");
 const Blog = require("../models/blog");
 const { User } = require("../models");
+const { Op } = require("sequelize");
 // Middleware to find a blog by ID and attach it to the request object
 const blogFinder = async (req, res, next) => {
   req.blog = await Blog.findByPk(req.params.id);
@@ -11,11 +12,20 @@ const blogFinder = async (req, res, next) => {
   next();
 };
 blogsRouter.get("/", async (req, res) => {
+  const where = {};
+
+  if (req.query.search) {
+    where.title = {
+      [Op.iLike]: `%${req.query.search}%`,
+    };
+  }
+
   const blogs = await Blog.findAll({
     include: {
       model: User,
       attributes: ["id", "username", "name"],
     },
+    where,
   });
   res.json(blogs);
 });
