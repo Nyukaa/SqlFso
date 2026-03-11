@@ -12,5 +12,4 @@ blog
 "url": "https://example.com/2",
 "title": "Anna",
 "likes": 4
-
 }

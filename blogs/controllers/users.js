@@ -4,13 +4,13 @@ const { User, Blog } = require("../models");
 const bcrypt = require("bcrypt");
 router.get("/", async (req, res) => {
   const users = await User.findAll({
+    attributes: ["id", "username", "name"],
     include: {
       model: Blog,
-      attributes: {
-        exclude: ["userId"],
-      },
+      attributes: ["id", "title", "author", "url", "likes"],
     },
   });
+
   res.json(users);
 });
 
