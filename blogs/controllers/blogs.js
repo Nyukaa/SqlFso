@@ -13,19 +13,27 @@ const blogFinder = async (req, res, next) => {
 };
 blogsRouter.get("/", async (req, res) => {
   const where = {};
-
+  //13.13
+  // if (req.query.search) {
+  //   where.title = {
+  //     [Op.iLike]: `%${req.query.search}%`,
+  //   };
+  // }
+  //13.14 for searching in both title or author
   if (req.query.search) {
-    where.title = {
-      [Op.iLike]: `%${req.query.search}%`,
-    };
+    const keyword = `%${req.query.search}%`;
+    where[Op.or] = [
+      { title: { [Op.iLike]: keyword } },
+      { author: { [Op.iLike]: keyword } },
+    ];
   }
-
   const blogs = await Blog.findAll({
     include: {
       model: User,
       attributes: ["id", "username", "name"],
     },
     where,
+    order: [["likes", "DESC"]],
   });
   res.json(blogs);
 });
