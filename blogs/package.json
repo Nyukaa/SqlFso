@@ -1,6 +1,7 @@
 {
   "scripts": {
-    "start": "node index.js"
+    "start": "node index.js",
+    "test": "node --test --test-concurrency=1 tests/api_ch3.test.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -9,5 +10,8 @@
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.20.0",
     "sequelize": "^6.37.7"
+  },
+  "devDependencies": {
+    "axios": "^1.13.6"
   }
 }
