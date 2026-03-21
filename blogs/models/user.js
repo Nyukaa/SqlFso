@@ -35,7 +35,7 @@ User.init(
     sequelize,
     modelName: "user",
     underscored: true,
-    // timestamps for createdAt and updatedAt, but we don't need them for this example
+    timestamps: true,
   }
 );
 

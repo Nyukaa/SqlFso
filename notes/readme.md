@@ -17,3 +17,5 @@ notes
 {
 "content":"Relational databases rule the world",
 "important": true}
+
+for migrations we install umzug
