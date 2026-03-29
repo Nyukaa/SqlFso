@@ -34,7 +34,7 @@ User.init(
   {
     sequelize,
     modelName: "user",
-    underscored: true,
+    underscored: true, // this will make the createdAt  fields to be created_at in the database
     timestamps: true,
   }
 );
