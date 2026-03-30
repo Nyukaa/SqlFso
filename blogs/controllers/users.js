@@ -47,4 +47,26 @@ router.put("/:username", async (req, res) => {
 
   res.json(user);
 });
+// to get user + blogs in reading list
+router.get("/:id", async (req, res) => {
+  const user = await User.findByPk(req.params.id, {
+    attributes: ["name", "username"],
+    include: [
+      {
+        model: Blog,
+        as: "readings",
+        attributes: ["id", "url", "title", "author", "likes", "year"],
+        through: {
+          attributes: [],
+        },
+      },
+    ],
+  });
+
+  if (!user) {
+    return res.status(404).end();
+  }
+
+  res.json(user);
+});
 module.exports = router;
