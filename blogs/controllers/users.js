@@ -49,6 +49,16 @@ router.put("/:username", async (req, res) => {
 });
 // to get user + blogs in reading list
 router.get("/:id", async (req, res) => {
+  const where = {};
+
+  if (req.query.read === "true") {
+    where.read = true;
+  }
+
+  if (req.query.read === "false") {
+    where.read = false;
+  }
+
   const user = await User.findByPk(req.params.id, {
     attributes: ["name", "username"],
     include: [
@@ -58,6 +68,7 @@ router.get("/:id", async (req, res) => {
         attributes: ["id", "url", "title", "author", "likes", "year"],
         through: {
           attributes: ["id", "read"],
+          where,
         },
       },
     ],
@@ -67,6 +78,25 @@ router.get("/:id", async (req, res) => {
     return res.status(404).end();
   }
 
-  res.json(user);
+  const formattedUser = {
+    name: user.name,
+    username: user.username,
+    readings: user.readings.map((blog) => ({
+      id: blog.id,
+      url: blog.url,
+      title: blog.title,
+      author: blog.author,
+      likes: blog.likes,
+      year: blog.year,
+      readinglists: [
+        {
+          id: blog.reading_list.id,
+          read: blog.reading_list.read,
+        },
+      ],
+    })),
+  };
+
+  res.json(formattedUser);
 });
 module.exports = router;
