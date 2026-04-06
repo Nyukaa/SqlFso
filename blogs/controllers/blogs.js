@@ -1,5 +1,5 @@
 const blogsRouter = require("express").Router();
-const tokenExtractor = require("../middleware/tokenExtractor");
+const sessionValidator = require("../middleware/sessionValidator");
 const Blog = require("../models/blog");
 const { User } = require("../models");
 const { Op } = require("sequelize");
@@ -38,7 +38,7 @@ blogsRouter.get("/", async (req, res) => {
   res.json(blogs);
 });
 
-blogsRouter.post("/", tokenExtractor, async (req, res, next) => {
+blogsRouter.post("/", sessionValidator, async (req, res, next) => {
   try {
     const user = await User.findByPk(req.decodedToken.id);
     const blog = await Blog.create({
@@ -53,7 +53,7 @@ blogsRouter.post("/", tokenExtractor, async (req, res, next) => {
   }
 });
 // DELETE blog, check if the user is the owner
-blogsRouter.delete("/:id", tokenExtractor, blogFinder, async (req, res) => {
+blogsRouter.delete("/:id", sessionValidator, blogFinder, async (req, res) => {
   if (String(req.blog.userId) !== String(req.decodedToken.id)) {
     return res
       .status(403)

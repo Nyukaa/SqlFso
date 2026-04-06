@@ -1,7 +1,8 @@
 {
   "scripts": {
     "start": "node index.js",
-    "test": "node --test --test-concurrency=1 tests/api_ch3.test.js"
+    "test": "node --test --test-concurrency=1 tests/api_ch3.test.js",
+      "migration:up": "npx sequelize-cli db:migrate"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",

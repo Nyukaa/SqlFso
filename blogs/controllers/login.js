@@ -19,6 +19,11 @@ loginRouter.post("/", async (req, res) => {
       error: "invalid username or password",
     });
   }
+  if (user.disabled) {
+    return res.status(401).json({
+      error: "user account disabled",
+    });
+  }
 
   const userForToken = {
     username: user.username,
@@ -27,6 +32,11 @@ loginRouter.post("/", async (req, res) => {
   // create a token that expires in 1 hour
   const token = jwt.sign(userForToken, SECRET, {
     expiresIn: "1h",
+  });
+
+  await Session.create({
+    userId: user.id,
+    token,
   });
   // return the token and user information
   res.json({
