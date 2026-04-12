@@ -6,6 +6,7 @@ const usersRouter = require("./controllers/users");
 const authorsRouter = require("./controllers/authors");
 const testingRouter = require("./controllers/testing");
 const loginRouter = require("./controllers/login");
+const logoutRouter = require("./controllers/logout");
 const errorHandler = require("./middleware/ErrorHandler");
 const readingListsRouter = require("./controllers/readinglists");
 app.use(express.json());
@@ -14,6 +15,7 @@ app.get("/", (req, res) => {
   res.status(200).send("ok");
 });
 app.use("/api/login", loginRouter);
+app.use("/api/logout", logoutRouter);
 app.use("/api/blogs", blogsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/authors", authorsRouter);

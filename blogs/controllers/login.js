@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt"); // for hashing passwords
 const loginRouter = require("express").Router();
-const { User } = require("../models");
+const { User, Session } = require("../models");
 const { SECRET } = require("../utils/config");
 
 loginRouter.post("/", async (req, res) => {

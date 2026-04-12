@@ -16,13 +16,13 @@ const sessionValidator = async (req, res, next) => {
     return res.status(401).json({ error: "token invalid" });
   }
 
-  // проверяем, есть ли такая активная сессия
+  // check if the session exists in the database
   const session = await Session.findOne({ where: { token } });
   if (!session) {
     return res.status(401).json({ error: "session expired or invalid" });
   }
 
-  // проверяем, не заблокирован ли пользователь
+  // check if the user exists and is not disabled
   const user = await User.findByPk(decoded.id);
   if (!user || user.disabled) {
     return res.status(403).json({ error: "user disabled" });
