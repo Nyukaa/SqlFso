@@ -40,11 +40,10 @@ blogsRouter.get("/", async (req, res) => {
 
 blogsRouter.post("/", sessionValidator, async (req, res, next) => {
   try {
-    const user = await User.findByPk(req.decodedToken.id);
     const blog = await Blog.create({
       ...req.body,
       date: new Date(),
-      userId: user.id,
+      userId: req.decodedToken.id,
     });
 
     res.json(blog);
@@ -54,7 +53,7 @@ blogsRouter.post("/", sessionValidator, async (req, res, next) => {
 });
 // DELETE blog, check if the user is the owner
 blogsRouter.delete("/:id", sessionValidator, blogFinder, async (req, res) => {
-  if (String(req.blog.userId) !== String(req.decodedToken.id)) {
+  if (String(req.blog.userId) !== String(req.user.id)) {
     return res
       .status(403)
       .json({ error: "you are not allowed to delete this blog" });

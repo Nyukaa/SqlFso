@@ -22,7 +22,7 @@ Blog.init(
     likes: { type: DataTypes.INTEGER, defaultValue: 0 },
     year: {
       type: DataTypes.INTEGER,
-      allowNull: false,
+      allowNull: true, //
       validate: {
         min: {
           args: 1991,

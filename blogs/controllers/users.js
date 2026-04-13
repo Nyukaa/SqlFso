@@ -31,7 +31,7 @@ router.post("/", async (req, res, next) => {
     next(error);
   }
 });
-//
+
 router.put("/:username", async (req, res) => {
   const user = await User.findOne({
     where: { username: req.params.username },
@@ -60,7 +60,7 @@ router.get("/:id", async (req, res) => {
   }
 
   const user = await User.findByPk(req.params.id, {
-    attributes: ["name", "username"],
+    attributes: ["id", "name", "username"],
     include: [
       {
         model: Blog,
@@ -78,25 +78,6 @@ router.get("/:id", async (req, res) => {
     return res.status(404).end();
   }
 
-  const formattedUser = {
-    name: user.name,
-    username: user.username,
-    readings: user.readings.map((blog) => ({
-      id: blog.id,
-      url: blog.url,
-      title: blog.title,
-      author: blog.author,
-      likes: blog.likes,
-      year: blog.year,
-      readinglists: [
-        {
-          id: blog.reading_list.id,
-          read: blog.reading_list.read,
-        },
-      ],
-    })),
-  };
-
-  res.json(formattedUser);
+  res.json(user);
 });
 module.exports = router;
