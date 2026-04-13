@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Run migrations
-        run: npx sequelize-cli db:migrate
+        run: npx sequelize-cli db:migrate --config sequelize.config.js
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db?sslmode=disable
 
