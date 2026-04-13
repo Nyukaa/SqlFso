@@ -39,8 +39,7 @@ jobs:
       - name: Start application
         run: npm start > app.log 2>&1 &
         env:
-          DATABASE_URL: postgres://avnadmin:AVNS_8Go6ETCxTW55jeh7cJ2@pg-3eae16d6-annashitikova-2467.f.aivencloud.com:26261/blog_app
-
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
           PORT: 3001
           SECRET: test_secret
 
@@ -50,7 +49,7 @@ jobs:
       - name: Run tests
         run: npm test
         env:
-          DATABASE_URL: postgres://avnadmin:AVNS_8Go6ETCxTW55jeh7cJ2@pg-3eae16d6-annashitikova-2467.f.aivencloud.com:26261/blog_app
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
 
           PORT: 3001
           SECRET: test_secret
