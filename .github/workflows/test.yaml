@@ -36,11 +36,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Run migrations
-        run: npx sequelize-cli db:migrate --config sequelize.config.js
-        env:
-          DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db?sslmode=disable
-
       - name: Start application
         run: npm start > app.log 2>&1 &
         env:
@@ -49,13 +44,12 @@ jobs:
           SECRET: test_secret
 
       - name: Wait for application to be ready
-        run: npx wait-on http://localhost:3001 -t 50000
+        run: npx wait-on http://localhost:3001 -t 30000
 
       - name: Run tests
         run: npm test
         env:
           DATABASE_URL: postgresql://postgres:postgres@localhost:5432/test_db?sslmode=disable
-
           PORT: 3001
           SECRET: test_secret
 
