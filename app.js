@@ -7,7 +7,7 @@ const authorsRouter = require("./controllers/authors");
 const testingRouter = require("./controllers/testing");
 const loginRouter = require("./controllers/login");
 const logoutRouter = require("./controllers/logout");
-const errorHandler = require("./middleware/ErrorHandler");
+const errorHandler = require("./middleware/ErrorHandler").default;
 const readingListsRouter = require("./controllers/readinglists");
 app.use(express.json());
 
