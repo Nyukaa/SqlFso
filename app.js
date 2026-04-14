@@ -7,7 +7,7 @@ const authorsRouter = require("./controllers/authors");
 const testingRouter = require("./controllers/testing");
 const loginRouter = require("./controllers/login");
 const logoutRouter = require("./controllers/logout");
-const errorHandler = require("./middleware/ErrorHandler").default;
+//const errorHandler = require("./middleware/ErrorHandler").default;
 const readingListsRouter = require("./controllers/readinglists");
 app.use(express.json());
 
@@ -22,6 +22,6 @@ app.use("/api/authors", authorsRouter);
 app.use("/api/readinglists", readingListsRouter);
 app.use("/api", testingRouter);
 
-app.use(errorHandler);
+//app.use(errorHandler);
 
 module.exports = app;
