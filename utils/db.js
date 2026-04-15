@@ -1,15 +1,22 @@
+require("dotenv").config();
+
 const { Sequelize } = require("sequelize");
 const { Umzug, SequelizeStorage } = require("umzug");
 
+const isProduction = process.env.NODE_ENV === "production";
+
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialect: "postgres",
-  dialectOptions: {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  },
+  dialectOptions: isProduction
+    ? {
+        ssl: {
+          require: true,
+          rejectUnauthorized: false,
+        },
+      }
+    : {},
 });
+
 const runMigrations = async () => {
   const migrator = new Umzug({
     migrations: {
@@ -23,24 +30,20 @@ const runMigrations = async () => {
     logger: console,
   });
 
-  const migrations = await migrator.up();
-
-  console.log("Migrations up to date", {
-    files: migrations.map((mig) => mig.name),
-  });
+  await migrator.up();
 };
+
 const connectToDatabase = async () => {
   try {
     await sequelize.authenticate();
     await runMigrations();
-    console.log("connected to the database");
-    await sequelize.sync(); // без alter: true
-  } catch (err) {
-    console.log("failed to connect to the database");
-    return process.exit(1);
-  }
 
-  return null;
+    console.log("connected to the database");
+  } catch (err) {
+    console.error(err);
+    console.log("failed to connect to the database");
+    process.exit(1);
+  }
 };
 
 module.exports = { connectToDatabase, sequelize };
